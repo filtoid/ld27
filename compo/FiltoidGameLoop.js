@@ -14,8 +14,8 @@ var ctx = null; // Useful to have a global reference for measuring fonts for ins
 var canvas = null; // The main drawing area
 var currentTime = 0; // For debugging - you can store the current time and see how it's changed
 
-var _player=null;
-var _roomManager = null;
+var _game=null;
+
 var SCREEN_WIDTH = 900;
 var SCREEN_HEIGHT = 600;
 
@@ -29,7 +29,7 @@ function loadGame(){
 	ctx = canvas.getContext('2d');
 	
 	// Do setup code here - make resources/assign things etc
-	//_player = new Player();
+	_game = new Game();
 	//_roomManager = new RoomManager();
 	
 	// The following line sets up the game loop
@@ -53,10 +53,12 @@ function update(){
 	
 	//Do your game updates here - we get true from _roomManager if the game is completed
 	// If it is completed then don't the player update or move anywhere
+	_game.update();
 	//if(!_roomManager.update())
 	//	_player.update();
 	
 	//Do you drawing here - make your resources draw themselves
+	_game.draw(ctx);
 	//_roomManager.draw(ctx);
 	//_player.draw(ctx);
 	
