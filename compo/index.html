@@ -1,0 +1,25 @@
+<html>
+<head><title>LD27 - 10 Seconds</title>
+	<script type="text/javascript" src="./FiltoidMaths.js"></script>
+	<script type="text/javascript" src="./FiltoidGameLoop.js"></script>
+	<script type="text/javascript" src="./FiltoidUtils.js"></script>
+	<script type="text/javascript" src="./keyHandlerUtils.js"></script>
+	<script type="text/javascript" src="./FiltoidCollisionManager.js"></script>
+	
+	<!-- Addthe jquery library for some nice syntatic sugar :) -->
+	<script type="text/javascript" src="jquery.min.js"></script>
+</head>
+
+<body onLoad="loadGame();">
+
+	<div id="canvas-div" style="width:900px; height:600px; margin:0px auto; border-width:3px; border-style:solid; border-color:#ff9900">
+		<canvas id="canvas" width="900px" height="600px">
+			<p>Your browser does not support the canvas element. I'm afraid I am only supporting Chrome during LD25 - I just don't have time to work through browser specific issues - Filtoid. Try it in other browsers though - it might work.</p>
+		</canvas>
+	</div>
+	<div id="player-message" style="position:absolute ; color:#222222 ; background-color:#aaaaaa"></div>
+	<div id="debug-console"></div>
+	
+
+</body>
+</html>
