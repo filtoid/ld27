@@ -49,23 +49,29 @@ function PlaceBlockDraw(ctx){
 	else if(this.type==TYPE_FLAME_TOWER)
 		ctx.drawImage(IMG_FLAME_TOWER,this.loc.x,this.loc.y);
 	
-	if(this.isHighlighted==true)
-		ctx.drawImage(IMG_HI_LIGHT,this.loc.x,this.loc.y);
+	if(this.isHighlighted==true){
+		var selTower = getSelectedTower(_game);
+		if(selTower==null || _game.money>selTower.getCost())
+			ctx.drawImage(IMG_HI_LIGHT,this.loc.x,this.loc.y);
+		else
+			ctx.drawImage(IMG_HI_LIGHT_RED,this.loc.x,this.loc.y);
+	}
 }
 
 function PlaceBlockClick(_x,_y,_button){
 	if(_button==null)
-		return;
+		return false;
 	
 	if( !(_x>this.loc.x && _x<this.loc.x+this.size.x && _y>this.loc.y && _y<this.loc.y+this.size.y) )
-		return;
+		return false;
 
 	// If we have already been assigned then don't attempt to reassign
 	if(this.type!="UNUSED")
-		return;
+		return false;
 	
 	this.type = _button.type;
 	
+	return true;
 }
 
 function PlaceBlockMouseMove(_x,_y){

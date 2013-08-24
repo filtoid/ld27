@@ -27,7 +27,7 @@ function Game(){
 	this.aryTypes[1]= TYPE_FLAME_TOWER
 	
 	var aryCt = 0;
-	for(var i=0;i<24;i++){
+	for(var i=0;i<12;i++){
 		for(var j=0;j<4;j++){
 			if(aryCt<this.aryTypes.length){
 				this.aryButtons[aryCt] = new TowerButton(this.aryTypes[aryCt],(j*25)+800,i*25);
@@ -39,6 +39,13 @@ function Game(){
 		}
 	}
 	
+	this.aryMenuButtons = new Array();
+	this.aryMenuButtons[0] = new MenuButton("./images/icons/sell.png",800,575);
+	this.aryMenuButtons[1] = new MenuButton("./images/icons/cancel.png",825,575);
+	this.aryMenuButtons[2] = new MenuButton("./images/icons/exit.png",850,575);
+	
+	this.score = 0;
+	this.money = 100;
 }
 
 function GameUpdate(){
@@ -58,11 +65,13 @@ function GameClick(_x,_y){
 		/*We are clicking on the main game area*/
 		if(isAnyTowerSelected(this)){
 			for(var j=0;j<this.aryConcrete.length;j++){
-				this.aryConcrete[j].click(_x,_y,getSelectedTower(this));
+				if(this.money >= getSelectedTower(this).getCost()){
+					if(this.aryConcrete[j].click(_x,_y,getSelectedTower(this)))
+						this.money -= getSelectedTower(this).getCost();
+				}
 			}
 		}
-		
-	}		
+	}
 	bQuitLoop = false;
 }
 
@@ -76,13 +85,39 @@ function GameMouseMove(_x,_y){
 }
 
 function GameDraw(ctx){
+	
 	ctx.drawImage(this.img,0,0);
+	
+	//context.fillStyle = "rgb(150,29,28)";
+	ctx.fillRect (800,300,100,300);
+	
 	for(var i=0;i<this.aryConcrete.length;i++){
 		this.aryConcrete[i].draw(ctx);
 	}
 	
+	var cacheAryButton = null;
+	
 	for(var i=0;i<this.aryButtons.length;i++){
 		this.aryButtons[i].draw(ctx);//ctx.drawImage(this.imgButton,this.aryButtons[i].loc.x, this.aryButtons[i].loc.y);
+		if(this.aryButtons[i].isSelected)
+			cacheAryButton = this.aryButtons[i];
+	}
+	
+	if(cacheAryButton!=null){
+		if(cacheAryButton.getProfilePic()!=null){
+			ctx.drawImage(cacheAryButton.getProfilePic(),810,310);
+		}
+	}
+	
+	var oldStyle = ctx.fillStyle;
+	ctx.fillStyle = "rgb(15,254,15)";
+	if(cacheAryButton!=null)
+		ctx.fillText("$" + cacheAryButton.getCost(),840,310);
+	ctx.fillText("$" + this.money, 810,565);
+	ctx.fillStyle = oldStyle;
+	
+	for(var i=0;i<this.aryMenuButtons.length;i++){
+		this.aryMenuButtons[i].draw(ctx);
 	}
 	
 	this.base.draw(ctx);
