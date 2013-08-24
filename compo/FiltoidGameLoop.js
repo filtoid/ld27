@@ -68,12 +68,15 @@ function update(){
 function OnCanvasClick(e){
 	var mouseX = e.pageX - this.offsetLeft;
 	var mouseY = e.pageY - this.offsetTop;
+	if(_game!=null)
+		_game.click(mouseX,mouseY);
 	
-	//curActiveScreen = curActiveScreen.click(mouseX,mouseY);
 }
 
 function OnMouseMove(e){
 	var mouseX = e.pageX - this.offsetLeft;
 	var mouseY = e.pageY - this.offsetTop;	
-	//curActiveScreen.mouseMove(mouseX,mouseY);
+	if(_game!=null)
+		_game.mouseMove(mouseX,mouseY);
+	
 } 
