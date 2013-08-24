@@ -9,19 +9,24 @@ var TYPE_MACHINE_GUN = "MACHINE_GUN";
 var TYPE_FLAME_TOWER = "FLAME_TOWER";
 IMG_HI_LIGHT
 */
+var UNUSED = "UNUSED";
 
 function PlaceBlock(_x,_y){
 	this.update = PlaceBlockUpdate;
 	this.draw = PlaceBlockDraw;
 	
 	this.loc = new Location(_x,_y);
-	this.type = "UNUSED";
+	this.type = UNUSED;
 	this.size = new Location(25,25);
 	
 	this.click = PlaceBlockClick;
 	this.mouseMove = PlaceBlockMouseMove;
 	
 	this.isHighlighted=false;
+	this.range=0;
+	this.MAX_GUN_RECHARGE = 20;
+	this.gunRecharge = 0;
+	this.damage = 20;
 	
 	if(IMG_CONCRETE_BLOCK==null){
 		IMG_CONCRETE_BLOCK = new Image();
@@ -37,8 +42,30 @@ function PlaceBlock(_x,_y){
 	}
 }
 
-function PlaceBlockUpdate(){
-
+function PlaceBlockUpdate(_ary){
+	if(this.gunRecharge>0){
+		this.gunRecharge-=1;
+		return;
+	}
+	
+	for(var i=0;i<_ary.length;i++){
+		if(_ary[i]!=null){
+			var _x = _ary[i].loc.x;
+			var _y = _ary[i].loc.y;
+			var _dx = this.loc.x-_x;
+			var _dy = this.loc.y-_y;
+			var hyp = Math.sqrt((_dx*_dx)+(_dy*_dy));
+			if(hyp<this.range){
+				_ary[i].attack(this.damage);
+				if(_ary[i].health<0){
+					_game.money+= _ary[i].value;
+					_ary[i]=null;
+				}
+				this.gunRecharge  = this.MAX_GUN_RECHARGE;
+				return;
+			}
+		}
+	}
 }
 
 function PlaceBlockDraw(ctx){
@@ -66,10 +93,15 @@ function PlaceBlockClick(_x,_y,_button){
 		return false;
 
 	// If we have already been assigned then don't attempt to reassign
-	if(this.type!="UNUSED")
+	if(this.type!=UNUSED)
 		return false;
 	
 	this.type = _button.type;
+	
+	if(this.type==TYPE_MACHINE_GUN)
+		this.range = 90;
+	else if(this.type==TYPE_FLAME_TOWER)
+		this.range = 75;
 	
 	return true;
 }

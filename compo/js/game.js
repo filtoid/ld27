@@ -26,6 +26,11 @@ function Game(){
 	this.aryTypes[0]= TYPE_MACHINE_GUN;
 	this.aryTypes[1]= TYPE_FLAME_TOWER
 	
+	this.aryEnemies = new Array();
+	for( var i=0;i<20;i++){
+		this.aryEnemies[i] = new Enemy(ENEMY_BASIC);
+	}
+	
 	var aryCt = 0;
 	for(var i=0;i<12;i++){
 		for(var j=0;j<4;j++){
@@ -49,7 +54,15 @@ function Game(){
 }
 
 function GameUpdate(){
-	
+	for(var i=0;i<this.aryEnemies.length;i++){
+		if(this.aryEnemies[i]!=null)
+			this.aryEnemies[i].update();
+	}
+	for(var i=0;i<this.aryConcrete.length;i++){
+		if(this.aryConcrete[i].type!=UNUSED){
+			this.aryConcrete[i].update(this.aryEnemies);
+		}
+	}
 }
 
 function GameClick(_x,_y){
@@ -107,6 +120,12 @@ function GameDraw(ctx){
 		if(cacheAryButton.getProfilePic()!=null){
 			ctx.drawImage(cacheAryButton.getProfilePic(),810,310);
 		}
+	}
+	
+	
+	for(var i=0;i<this.aryEnemies.length;i++){
+		if(this.aryEnemies[i]!=null)
+			this.aryEnemies[i].draw(ctx);
 	}
 	
 	var oldStyle = ctx.fillStyle;
