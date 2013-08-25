@@ -250,17 +250,22 @@ function GameDraw(ctx){
 		}
 	}
 	
-	
+	/*Drawing enemies backwards will make it less likely that we won't be able to see
+	damaged health bars*/
 	for(var i=0;i<this.aryEnemies.length;i++){
-		if(this.aryEnemies[i]!=null)
-			this.aryEnemies[i].draw(ctx);
+		if(this.aryEnemies[this.aryEnemies.length-i]!=null)
+			this.aryEnemies[this.aryEnemies.length-i].draw(ctx);
 	}
 	
 	ctx.fillStyle = "rgb(15,254,15)";
 	if(cacheAryButton!=null)
 		ctx.fillText("$" + cacheAryButton.getCost(),840,310);
 	
-	ctx.fillText("Next Wave: " + this.countdown, 817, 475);
+	if(this.wave<MAX_WAVES)
+		ctx.fillText("Next Wave: " + this.countdown, 817, 475);
+	else
+		ctx.fillText("Next Wave: --",817,475);
+	
 	ctx.fillText("Cur Wave: " + this.wave, 819, 495);
 	ctx.fillText("$" + this.money, 810,535);
 	

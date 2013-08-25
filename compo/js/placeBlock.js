@@ -79,8 +79,8 @@ function PlaceBlockUpdate(_ary){
 				
 				// Make a bullet line so we know who is shooting who
 				this.bullet = new Array();
-				this.bullet[0] = new Location(this.loc.x,this.loc.y);
-				this.bullet[1] = new Location(_ary[i].loc.x,_ary[i].loc.y);
+				this.bullet[0] = new Location(this.loc.x+(this.size.x/2),this.loc.y+(this.size.y/2));
+				this.bullet[1] = new Location(_ary[i].loc.x+(_ary[i].size.x/2),_ary[i].loc.y+(_ary[i].size.y/2));
 				
 				_ary[i].attack(this.damage);
 				if(_ary[i].health<0){
@@ -192,7 +192,7 @@ function PlaceBlockUpgrade(_money){
 			this.range = 100;
 			this.damage=80;
 			this.sellValue = 35;
-			this.level=2;
+			this.level=3;
 		}
 	}
 	
