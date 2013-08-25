@@ -3,6 +3,7 @@ var IMG_CONCRETE_BLOCK = null;
 
 var IMG_MACHINE_GUN = null;
 var IMG_FLAME_TOWER = null;
+var IMG_BLOCKED = null;
 
 /*
 var TYPE_MACHINE_GUN = "MACHINE_GUN";
@@ -10,6 +11,7 @@ var TYPE_FLAME_TOWER = "FLAME_TOWER";
 IMG_HI_LIGHT
 */
 var UNUSED = "UNUSED";
+var BLOCKED = "BLOCKED";
 
 function PlaceBlock(_x,_y){
 	this.update = PlaceBlockUpdate;
@@ -28,6 +30,8 @@ function PlaceBlock(_x,_y){
 	this.gunRecharge = 0;
 	this.damage = 20;
 	
+	this.setType = PlaceBlockSetType;
+	
 	if(IMG_CONCRETE_BLOCK==null){
 		IMG_CONCRETE_BLOCK = new Image();
 		IMG_CONCRETE_BLOCK.src = "./images/concrete.png";
@@ -39,6 +43,10 @@ function PlaceBlock(_x,_y){
 	if(IMG_MACHINE_GUN==null){
 		IMG_MACHINE_GUN = new Image();
 		IMG_MACHINE_GUN.src = "./images/machine_gun.png";
+	}
+	if(IMG_BLOCKED==null){
+		IMG_BLOCKED= new Image();
+		IMG_BLOCKED.src = "./images/blocked.png";
 	}
 }
 
@@ -69,6 +77,12 @@ function PlaceBlockUpdate(_ary){
 }
 
 function PlaceBlockDraw(ctx){
+	
+	if(this.type==BLOCKED){
+		ctx.drawImage(IMG_BLOCKED,this.loc.x,this.loc.y);
+		return;
+	}
+	
 	ctx.drawImage(IMG_CONCRETE_BLOCK,this.loc.x,this.loc.y);
 	
 	if(this.type==TYPE_MACHINE_GUN)
@@ -83,6 +97,10 @@ function PlaceBlockDraw(ctx){
 		else
 			ctx.drawImage(IMG_HI_LIGHT_RED,this.loc.x,this.loc.y);
 	}
+}
+
+function PlaceBlockSetType(_type){
+	this.type=_type;
 }
 
 function PlaceBlockClick(_x,_y,_button){
@@ -102,6 +120,8 @@ function PlaceBlockClick(_x,_y,_button){
 		this.range = 90;
 	else if(this.type==TYPE_FLAME_TOWER)
 		this.range = 75;
+	else
+		this.range = 0;
 	
 	return true;
 }

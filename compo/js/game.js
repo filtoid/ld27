@@ -277,4 +277,47 @@ function loadArray(_this){
 			aryCount++;
 		}
 	}
+	
+	/*blank out the blocked squares*/
+	for(var i=0;i<24;i++){
+		//Find the right sqare
+		for(var j=0;j<_this.aryConcrete.length;j++){
+			if(_this.aryConcrete[j].loc.x==0 && _this.aryConcrete[j].loc.y==(i*25))
+				_this.aryConcrete[j].setType(BLOCKED);
+		}
+	}
+	for(var i=1;i<24;i++){
+		//Find the right sqare
+		for(var j=0;j<_this.aryConcrete.length;j++){
+			if(_this.aryConcrete[j].loc.x==i*25 && _this.aryConcrete[j].loc.y==200)
+				_this.aryConcrete[j].setType(BLOCKED);
+		}
+	}
+	/*top line*/
+	for(var i=1;i<25;i++){
+		//Find the right sqare
+		for(var j=0;j<_this.aryConcrete.length;j++){
+			if(_this.aryConcrete[j].loc.x==(i*25)+175 && _this.aryConcrete[j].loc.y==0)
+				_this.aryConcrete[j].setType(BLOCKED);
+		}
+	}
+	
+	/* right hand edge*/
+	for(var i=1;i<24;i++){
+		//Find the right sqare
+		for(var j=0;j<_this.aryConcrete.length;j++){
+			if(_this.aryConcrete[j].loc.x==775 && _this.aryConcrete[j].loc.y==(i*25))
+				_this.aryConcrete[j].setType(BLOCKED);
+		}
+	}
+	
+	/*top line*/
+	for(var i=1;i<25;i++){
+		//Find the right sqare
+		for(var j=0;j<_this.aryConcrete.length;j++){
+			if(_this.aryConcrete[j].loc.x==(i*25)+175 && _this.aryConcrete[j].loc.y==400)
+				_this.aryConcrete[j].setType(BLOCKED);
+		}
+	}
+	
 }
