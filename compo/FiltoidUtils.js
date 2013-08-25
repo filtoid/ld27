@@ -87,3 +87,18 @@ function FiltoidHitTest(point, isForMovement, obj){
 	
 	return didHit;
 }
+
+function drawHealthBar(_this,ctx){
+	if(_this==null || _this.health == null || _this.MAX_HEALTH==null || ctx==null)
+		return;
+	
+	var per = (_this.health/_this.MAX_HEALTH);
+	
+	var oldStyle = ctx.fillStyle;
+	ctx.fillStyle = "rgb(0,254,0)";
+	
+	ctx.fillRect(_this.loc.x-(_this.size.x/2),_this.loc.y-5,per*_this.size.x,5);
+	ctx.fillStyle = "rgb(254,0,0)";
+	ctx.fillRect((_this.loc.x-(_this.size.x/2))+(per*_this.size.x),_this.loc.y-5,(1-per)*_this.size.x,5);
+	ctx.fillStyle = oldStyle;
+}
