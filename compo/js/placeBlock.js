@@ -4,6 +4,10 @@ var IMG_CONCRETE_BLOCK = null;
 var IMG_MACHINE_GUN = null;
 var IMG_FLAME_TOWER = null;
 var IMG_BLOCKED = null;
+var IMG_LASER_TOWER=null;
+var IMG_EXPLOSION_TOWER=null;
+var IMG_MISSILE_TOWER=null;
+
 
 /*
 var TYPE_MACHINE_GUN = "MACHINE_GUN";
@@ -41,7 +45,16 @@ function PlaceBlock(_x,_y){
 	this.setType = PlaceBlockSetType;
 	
 	this.bullet = null;
-	
+	loadImages();
+}
+
+function loadImages(){
+/*var IMG_LASER_TOWER=null;
+var IMG_EXPLOSION_TOWER=null;
+var IMG_MISSILE_TOWER=null;
+
+*/
+		
 	if(IMG_CONCRETE_BLOCK==null){
 		IMG_CONCRETE_BLOCK = new Image();
 		IMG_CONCRETE_BLOCK.src = "./images/concrete.png";
@@ -49,6 +62,18 @@ function PlaceBlock(_x,_y){
 	if(IMG_FLAME_TOWER==null){
 		IMG_FLAME_TOWER = new Image();
 		IMG_FLAME_TOWER.src = "./images/flame_tower.png";
+	}
+	if(IMG_LASER_TOWER==null){
+		IMG_LASER_TOWER = new Image();
+		IMG_LASER_TOWER.src = "./images/laser_tower.png";
+	}
+	if(IMG_EXPLOSION_TOWER==null){
+		IMG_EXPLOSION_TOWER = new Image();
+		IMG_EXPLOSION_TOWER.src = "./images/explosion_tower.png";
+	}
+	if(IMG_MISSILE_TOWER==null){
+		IMG_MISSILE_TOWER = new Image();
+		IMG_MISSILE_TOWER.src = "./images/missile_tower.png";
 	}
 	if(IMG_MACHINE_GUN==null){
 		IMG_MACHINE_GUN = new Image();
@@ -112,10 +137,16 @@ function PlaceBlockDraw(ctx){
 		ctx.drawImage(IMG_MACHINE_GUN,this.loc.x,this.loc.y);
 	else if(this.type==TYPE_FLAME_TOWER)
 		ctx.drawImage(IMG_FLAME_TOWER,this.loc.x,this.loc.y);
+	else if(this.type==TYPE_EXPLOSION_TOWER)
+		ctx.drawImage(IMG_EXPLOSION_TOWER,this.loc.x,this.loc.y);
+	else if(this.type==TYPE_LASER_TOWER)
+		ctx.drawImage(IMG_LASER_TOWER,this.loc.x,this.loc.y);
+	else if(this.type==TYPE_MISSILE_TOWER)
+		ctx.drawImage(IMG_MISSILE_TOWER,this.loc.x,this.loc.y);
 	
 	if(this.isHighlighted==true){
 		var selTower = getSelectedTower(_game);
-		if(selTower==null || _game.money>selTower.getCost())
+		if(selTower==null || _game.money>=selTower.getCost())
 			ctx.drawImage(IMG_HI_LIGHT,this.loc.x,this.loc.y);
 		else
 			ctx.drawImage(IMG_HI_LIGHT_RED,this.loc.x,this.loc.y);
@@ -152,6 +183,21 @@ function PlaceBlockSetType(_type){
 		this.damage=40;
 		this.sellValue = 15;
 		this.level=1;
+	}else if(this.type==TYPE_EXPLOSION_TOWER){ //TODO: Add splash damage
+		this.level=1;
+		this.damage = 35;
+		this.sellValue= 45;
+		this.range = 150;
+	}else if(this.type==TYPE_LASER_TOWER){
+		this.level=1;
+		this.damage = 45;
+		this.sellValue= 20;
+		this.range = 90;
+	}else if(this.type==TYPE_MISSILE_TOWER){
+		this.level=1;
+		this.damage = 80;
+		this.sellValue= 30;
+		this.range = 65;
 	}else{
 		this.level=0;
 		this.range = 0;
@@ -180,6 +226,21 @@ function PlaceBlockUpgrade(_money){
 			this.damage=80;
 			this.sellValue = 35;
 			this.level=2;
+		}else if(this.type==TYPE_LASER_TOWER){
+			this.range = 95;
+			this.damage=65;
+			this.sellValue = 100;
+			this.level=2;
+		}else if(this.type==TYPE_MISSILE_TOWER){
+			this.range = 70;
+			this.damage=100;
+			this.sellValue = 100;
+			this.level=2;
+		}else if(this.type==TYPE_EXPLOSION_TOWER){
+			this.range = 225;
+			this.damage=50;
+			this.sellValue = 150;
+			this.level=2;
 		}
 	}else if(this.level==2){
 		if(this.type==TYPE_MACHINE_GUN){
@@ -192,6 +253,21 @@ function PlaceBlockUpgrade(_money){
 			this.range = 100;
 			this.damage=80;
 			this.sellValue = 35;
+			this.level=3;
+		}else if(this.type==TYPE_LASER_TOWER){
+			this.range = 100;
+			this.damage=85;
+			this.sellValue = 250;
+			this.level=3;
+		}else if(this.type==TYPE_MISSILE_TOWER){
+			this.range = 80;
+			this.damage=125;
+			this.sellValue = 350;
+			this.level=3;
+		}else if(this.type==TYPE_EXPLOSION_TOWER){
+			this.range = 300;
+			this.damage=75;
+			this.sellValue = 400;
 			this.level=3;
 		}
 	}
@@ -209,12 +285,24 @@ function PlaceBlockGetUpgradeValue(){
 			return 100;
 		}else if(this.type==TYPE_FLAME_TOWER){
 			return 110;
+		}else if(this.type==TYPE_LASER_TOWER){
+			return 200;
+		}else if(this.type==TYPE_MISSILE_TOWER){
+			return 275;
+		}else if(this.type==TYPE_EXPLOSION_TOWER){
+			return 350;
 		}
 	}else if(this.level==2){
 		if(this.type==TYPE_MACHINE_GUN){
 			return 350;
 		}else if(this.type==TYPE_FLAME_TOWER){
 			return 400;
+		}else if(this.type==TYPE_MISSILE_TOWER){
+			return 675;
+		}else if(this.type==TYPE_LASER_TOWER){
+			return 550;
+		}else if(this.type==TYPE_EXPLOSION_TOWER){
+			return 900;
 		}
 	}
 }

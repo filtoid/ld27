@@ -7,6 +7,9 @@ var IMG_BUTTON_BACKGROUND = null;
 
 var TYPE_MACHINE_GUN = "MACHINE_GUN";
 var TYPE_FLAME_TOWER = "FLAME_TOWER";
+var TYPE_MISSILE_TOWER = "MISSILE_TOWER";
+var TYPE_EXPLOSION_TOWER = "EXPLOSION_TOWER";
+var TYPE_LASER_TOWER = "LASER_TOWER";
 
 function TowerButton(_type,_x,_y){
 	this.type = _type;
@@ -18,11 +21,19 @@ function TowerButton(_type,_x,_y){
 			this.img.src = "./images/machine_gun.png";
 		else if(this.type==TYPE_FLAME_TOWER)
 			this.img.src = "./images/flame_tower.png";
+		else if(this.type==TYPE_MISSILE_TOWER)
+			this.img.src = "./images/missile_tower.png";
+		else if(this.type==TYPE_EXPLOSION_TOWER)
+			this.img.src = "./images/explosion_tower.png";
+		else if(this.type==TYPE_LASER_TOWER)
+			this.img.src = "./images/laser_tower.png";
+		
 	}
 	
 	this.loc = new Location(_x,_y);
 	
 	this.size = new Location(25,25);
+	this.getCostString = TowerButtonGetCostString;
 	
 	this.update = TowerButtonUpdate;
 	this.draw = TowerButtonDraw;
@@ -35,6 +46,7 @@ function TowerButton(_type,_x,_y){
 	
 	this.getProfilePic = TowerButtonGetProfilePic;
 	this.getCost = TowerButtonGetCost;
+	this.getName = TowerButtonGetName;
 	
 	// One time init
 	if(IMG_HI_LIGHT==null){
@@ -98,11 +110,42 @@ function TowerButtonMouseMove(_x,_y){
 	}
 }
 
+function TowerButtonGetCostString(){
+	if(this.type==TYPE_MACHINE_GUN)
+		return "1-$25,2-$100,3-350";
+	else if(this.type==TYPE_FLAME_TOWER)
+		return "1-$30,2-$110,3-$400";
+	else if(this.type==TYPE_LASER_TOWER)
+		return "1-$50,2-$200,3-$550";
+	else if(this.type==TYPE_MISSILE_TOWER)
+		return "1-$75,2-$275,3-$675";
+	else if(this.type==TYPE_EXPLOSION_TOWER)
+		return "1-$90,2-$350,3-$900";
+}
 function TowerButtonGetCost(){
 	if(this.type==TYPE_MACHINE_GUN)
 		return 25;
 	else if(this.type==TYPE_FLAME_TOWER)
 		return 30;
+	else if(this.type==TYPE_LASER_TOWER)
+		return 50;
+	else if(this.type==TYPE_MISSILE_TOWER)
+		return 75;
+	else if(this.type==TYPE_EXPLOSION_TOWER)
+		return 90;
+	
+}
+function TowerButtonGetName(){
+	if(this.type==TYPE_MACHINE_GUN)
+		return "Machine Gun";
+	else if(this.type==TYPE_FLAME_TOWER)
+		return "Flame";
+	else if(this.type==TYPE_LASER_TOWER)
+		return "Laser";
+	else if(this.type==TYPE_MISSILE_TOWER)
+		return "Missile";
+	else if(this.type==TYPE_EXPLOSION_TOWER)
+		return "Explosion";
 }
 
 function TowerButtonGetProfilePic(){
@@ -115,6 +158,13 @@ function TowerButtonGetProfilePic(){
 			this.profilePic.src = "./images/profiles/machine_gun_profile.png";
 		else if(this.type==TYPE_FLAME_TOWER)
 			this.profilePic.src = "./images/profiles/flame_tower_profile.png";
+		else if(this.type==TYPE_LASER_TOWER)
+			this.profilePic.src = "./images/profiles/laser_tower_profile.png";
+		else if(this.type==TYPE_MISSILE_TOWER)
+			this.profilePic.src = "./images/profiles/missile_tower_profile.png";
+		else if(this.type==TYPE_EXPLOSION_TOWER)
+			this.profilePic.src = "./images/profiles/explosion_tower_profile.png";
+			
 	}
 	return this.profilePic;
 }

@@ -36,8 +36,11 @@ function Game(){
 	this.GAME_WON= false;
 	
 	this.aryTypes = new Array();
-	this.aryTypes[0]= TYPE_MACHINE_GUN;
-	this.aryTypes[1]= TYPE_FLAME_TOWER
+	this.aryTypes[0] = TYPE_MACHINE_GUN;
+	this.aryTypes[1] = TYPE_FLAME_TOWER;
+	this.aryTypes[2] = TYPE_LASER_TOWER;
+	this.aryTypes[3] = TYPE_MISSILE_TOWER;
+	this.aryTypes[4] = TYPE_EXPLOSION_TOWER;
 	
 	this.aryEnemies = new Array();
 	this.hintText = "";
@@ -62,7 +65,7 @@ function Game(){
 	this.aryMenuButtons[0] = new MenuButton("./images/icons/sell.png",800,575);
 	this.aryMenuButtons[1] = new MenuButton("./images/icons/cancel.png",825,575);
 	this.aryMenuButtons[2] = new MenuButton("./images/icons/exit.png",850,575);
-	this.aryMenuButtons[3] = new MenuButton("./images/icons/exit.png",875,575);
+	this.aryMenuButtons[3] = new MenuButton("./images/icons/restart.png",875,575);
 	
 	this.score = 0;
 	this.money = 100;
@@ -258,8 +261,12 @@ function GameDraw(ctx){
 	}
 	
 	ctx.fillStyle = "rgb(15,254,15)";
+	
 	if(cacheAryButton!=null)
-		ctx.fillText("$" + cacheAryButton.getCost(),840,310);
+	{	
+		ctx.fillText(cacheAryButton.getName(),800,310);
+		ctx.fillText(cacheAryButton.getCostString(),800,460);
+	}
 	
 	if(this.wave<MAX_WAVES)
 		ctx.fillText("Next Wave: " + this.countdown, 817, 475);

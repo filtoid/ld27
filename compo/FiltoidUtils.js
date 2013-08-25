@@ -101,4 +101,15 @@ function drawHealthBar(_this,ctx){
 	ctx.fillStyle = "rgb(254,0,0)";
 	ctx.fillRect((_this.loc.x-(_this.size.x/2))+(per*_this.size.x),_this.loc.y-5,(1-per)*_this.size.x,5);
 	ctx.fillStyle = oldStyle;
+	
+	var oldStroke = ctx.strokeStyle;
+	ctx.beginPath();
+	ctx.strokeStyle="rgb(0,0,0)";
+	ctx.moveTo(_this.loc.x-(_this.size.x/2),_this.loc.y-5);
+	ctx.lineTo(_this.loc.x+(_this.size.x/2),_this.loc.y-5);
+	ctx.lineTo(_this.loc.x+(_this.size.x/2),_this.loc.y);
+	ctx.lineTo(_this.loc.x-(_this.size.x/2),_this.loc.y);
+	ctx.lineTo(_this.loc.x-(_this.size.x/2),_this.loc.y-5);
+	ctx.stroke();
+	ctx.strokeStyle = oldStroke;
 }

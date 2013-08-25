@@ -1,6 +1,8 @@
 /*enemy.js*/
 var ENEMY_BASIC = "BASIC";
 
+var IMG_ENEMY_1 = null;
+
 function Enemy(_type,_wave){
 	this.loc = new Location(112,0);
 	this.size = new Location(10,10);
@@ -53,14 +55,23 @@ function Enemy(_type,_wave){
 	this.MAX_HEALTH +=this.waveBalance[this.wave];
 	this.health = this.MAX_HEALTH;
 	
+	enemyLoadImages();
 	
 	this.SPEED = 1.2-(0.1*this.wave);
+}
+
+function enemyLoadImages(){
+	if(IMG_ENEMY_1==null){
+		IMG_ENEMY_1 = new Image();
+		IMG_ENEMY_1.src = "./images/enemies/level_1.png";
+	}
 }
 
 function EnemyDraw(ctx){
 	var oldStyle = ctx.fillStyle;
 	ctx.fillStyle="rgb(150,150,0)";
-	ctx.fillRect(this.loc.x-5,this.loc.y-5,10,10);
+	ctx.drawImage(IMG_ENEMY_1,this.loc.x-(IMG_ENEMY_1.width/2),this.loc.y-(IMG_ENEMY_1.height/2));
+	//ctx.fillRect(this.loc.x-5,this.loc.y-5,10,10);
 	ctx.fillStyle = oldStyle;
 	
 	drawHealthBar(this,ctx);
