@@ -1,4 +1,7 @@
 /* game.js */
+
+var MAX_WAVES=25;
+
 function Game(){
 	this.update = GameUpdate;
 	this.draw = GameDraw;
@@ -10,8 +13,16 @@ function Game(){
 	this.imgConcrete = new Image();
 	this.imgConcrete.src = "./images/concrete.png";
 	
+	this.countdown = 10;
+	this.countdownDelay = 60; // 30 frames per second
+	this.wave = 0;
+	
 	this.click = GameClick;
 	this.mouseMove = GameMouseMove;
+	
+	this.attackBase = GameAttackBase;
+	
+	this.mode="none";
 	
 	loadArray(this);
 	
@@ -21,15 +32,18 @@ function Game(){
 	this.imgButton.src = "./images/button_background.png";
 	
 	this.aryButtons = new Array();
+	this.GAME_OVER = false;
+	this.GAME_WON= false;
 	
 	this.aryTypes = new Array();
 	this.aryTypes[0]= TYPE_MACHINE_GUN;
 	this.aryTypes[1]= TYPE_FLAME_TOWER
 	
 	this.aryEnemies = new Array();
-	for( var i=0;i<20;i++){
-		this.aryEnemies[i] = new Enemy(ENEMY_BASIC);
-	}
+	this.hintText = "";
+	
+	this.createWave = GameCreateWave;
+	this.createWave(this.wave);
 	
 	var aryCt = 0;
 	for(var i=0;i<12;i++){
@@ -48,12 +62,71 @@ function Game(){
 	this.aryMenuButtons[0] = new MenuButton("./images/icons/sell.png",800,575);
 	this.aryMenuButtons[1] = new MenuButton("./images/icons/cancel.png",825,575);
 	this.aryMenuButtons[2] = new MenuButton("./images/icons/exit.png",850,575);
+	this.aryMenuButtons[3] = new MenuButton("./images/icons/exit.png",875,575);
 	
 	this.score = 0;
 	this.money = 100;
 }
 
+function GameAttackBase(_val){
+	this.base.health-=_val;
+	if(this.base.health<0){
+		this.GAME_OVER=true;
+	}
+}
+
+function GameCreateWave(_num){
+	
+	var spares = 20;
+	// Go through and set enemies that are dead to life again
+	for( var i=0;i<20;i++){
+		if(this.aryEnemies[i]==null){
+			this.aryEnemies[i] = new Enemy(ENEMY_BASIC,_num);
+			spares-=1;
+		}
+		//	else
+	//		i--;
+	}
+	
+	for(var i=0;i<spares;i++){
+		this.aryEnemies[this.aryEnemies.length] = new Enemy(ENEMY_BASIC,_num);
+	}
+	
+}
+
 function GameUpdate(){
+	
+	if(this.GAME_OVER == true){
+		return;
+	}else if(this.GAME_WON==true){
+		return;
+	}else{
+		if(this.wave==MAX_WAVES){
+			this.GAME_WON=true;
+			for(var i=0;i<this.aryEnemies.length;i++){
+				if(this.aryEnemies[i]!=null)
+					this.GAME_WON=false;
+			}
+		}
+	}
+	
+	//this.countdown = 10;
+	//this.countdownDelay = 30;
+	if(this.countdownDelay>0){
+		this.countdownDelay-=1;
+	}else{
+		this.countdown-=1;
+		this.countdownDelay=60;
+		if(this.countdown<0){
+			this.countdown = 10;
+			if(this.wave!=MAX_WAVES){
+				this.wave+=1;
+				//start next wave
+				this.createWave(this.wave);
+			}
+		}
+	}
+	
 	for(var i=0;i<this.aryEnemies.length;i++){
 		if(this.aryEnemies[i]!=null)
 			this.aryEnemies[i].update();
@@ -69,6 +142,23 @@ function GameClick(_x,_y){
 	
 	var bQuitLoop = false;
 	if(_x>800){
+		this.mode = "none";
+		
+		var btnSell = this.aryMenuButtons[0];
+		var btnCancel = this.aryMenuButtons[1];
+		var btnUpgrade = this.aryMenuButtons[2];
+		var btnReset = this.aryMenuButtons[3];
+	
+		if(_x>btnReset.loc.x && _x<btnReset.loc.x+btnReset.size.x && _y>btnReset.loc.y && _y<btnReset.loc.y+btnReset.size.y){
+			// Start a new game
+			_game=new Game();
+			return;
+		}else if(_x>btnSell.loc.x && _x<btnSell.loc.x+btnSell.size.x && _y>btnSell.loc.y && _y<btnSell.loc.y+btnSell.size.y){
+			this.mode = "Sell";
+		}else if(_x>btnUpgrade.loc.x && _x<btnUpgrade.loc.x+btnUpgrade.size.x && _y>btnUpgrade.loc.y && _y<btnUpgrade.loc.y+btnUpgrade.size.y){
+			this.mode = "Upgrade";
+		}	
+		
 		/*We are clicking on menu items - either select or clear selection*/
 		for(var i = 0;i<this.aryButtons.length&&bQuitLoop==false;i++){
 			if(!this.aryButtons[i].click(_x,_y))
@@ -76,6 +166,24 @@ function GameClick(_x,_y){
 		}
 	}else{
 		/*We are clicking on the main game area*/
+		if(this.mode=="Sell"){
+			for(var i=0;i<this.aryConcrete.length;i++){
+				if(this.aryConcrete[i].hitTest(_x,_y) && this.aryConcrete[i].type!=UNUSED && this.aryConcrete[i].type!=BLOCKED){
+					this.money+=this.aryConcrete[i].sellValue;
+					this.aryConcrete[i].setType(UNUSED);
+					return;
+				}
+			}
+		}else if(this.mode=="Upgrade"){
+			for(var i=0;i<this.aryConcrete.length;i++){
+				if(this.aryConcrete[i].hitTest(_x,_y) && this.aryConcrete[i].type!=UNUSED && this.aryConcrete[i].type!=BLOCKED){
+					
+					this.money-=this.aryConcrete[i].upgrade(this.money);
+					return;
+				}
+			}
+		}
+		
 		if(isAnyTowerSelected(this)){
 			for(var j=0;j<this.aryConcrete.length;j++){
 				if(this.money >= getSelectedTower(this).getCost()){
@@ -90,6 +198,24 @@ function GameClick(_x,_y){
 
 function GameMouseMove(_x,_y){
 	
+	var btnSell = this.aryMenuButtons[0];
+	var btnCancel = this.aryMenuButtons[1];
+	var btnUpgrade= this.aryMenuButtons[2];
+	var btnReset = this.aryMenuButtons[3];
+	
+	if(_x>btnReset.loc.x && _x<btnReset.loc.x+btnReset.size.x && _y>btnReset.loc.y && _y<btnReset.loc.y+btnReset.size.y){
+		// Start a new game
+		this.hintText = "Reset";
+	}else if(_x>btnSell.loc.x && _x<btnSell.loc.x+btnSell.size.x && _y>btnSell.loc.y && _y<btnSell.loc.y+btnSell.size.y){
+		this.hintText= "Sell";
+	}else if(_x>btnCancel.loc.x && _x<btnCancel.loc.x+btnCancel.size.x && _y>btnCancel.loc.y && _y<btnCancel.loc.y+btnCancel.size.y){
+		this.hintText= "Cancel";
+	}else if(_x>btnUpgrade.loc.x && _x<btnUpgrade.loc.x+btnUpgrade.size.x && _y>btnUpgrade.loc.y && _y<btnUpgrade.loc.y+btnUpgrade.size.y){
+		this.hintText= "Upgrade";
+	}else{
+		this.hintText ="";
+	}
+	
 	for(var i = 0;i<this.aryButtons.length;i++){
 		this.aryButtons[i].mouseMove(_x,_y);
 	}
@@ -98,6 +224,8 @@ function GameMouseMove(_x,_y){
 }
 
 function GameDraw(ctx){
+	
+	var oldStyle = ctx.fillStyle;
 	
 	ctx.drawImage(this.img,0,0);
 	
@@ -122,24 +250,48 @@ function GameDraw(ctx){
 		}
 	}
 	
-	
+	/*Drawing enemies backwards will make it less likely that we won't be able to see
+	damaged health bars*/
 	for(var i=0;i<this.aryEnemies.length;i++){
-		if(this.aryEnemies[i]!=null)
-			this.aryEnemies[i].draw(ctx);
+		if(this.aryEnemies[this.aryEnemies.length-i]!=null)
+			this.aryEnemies[this.aryEnemies.length-i].draw(ctx);
 	}
 	
-	var oldStyle = ctx.fillStyle;
 	ctx.fillStyle = "rgb(15,254,15)";
 	if(cacheAryButton!=null)
 		ctx.fillText("$" + cacheAryButton.getCost(),840,310);
-	ctx.fillText("$" + this.money, 810,565);
-	ctx.fillStyle = oldStyle;
+	
+	if(this.wave<MAX_WAVES)
+		ctx.fillText("Next Wave: " + this.countdown, 817, 475);
+	else
+		ctx.fillText("Next Wave: --",817,475);
+	
+	ctx.fillText("Cur Wave: " + this.wave, 819, 495);
+	ctx.fillText("$" + this.money, 810,535);
+	
+	if(this.mode!="none"){
+		ctx.fillText(this.mode + " mode",810,565);
+	}else{
+		ctx.fillText(this.hintText,810,565);
+	}
 	
 	for(var i=0;i<this.aryMenuButtons.length;i++){
 		this.aryMenuButtons[i].draw(ctx);
 	}
 	
 	this.base.draw(ctx);
+	
+	if(this.GAME_WON){
+		ctx.fillStyle = "rgb(254,0,0)";
+		ctx.fillText("GAME WON - CONGRATULATIONS", 425,290);
+	}
+	if(this.GAME_OVER){
+		ctx.fillStyle = "rgb(254,0,0)";
+		ctx.fillText("GAME OVER", 425,290);
+	}
+	
+	ctx.fillStyle = oldStyle;
+	
 }
 
 function isAnyTowerSelected(_this){
@@ -277,4 +429,47 @@ function loadArray(_this){
 			aryCount++;
 		}
 	}
+	
+	/*blank out the blocked squares*/
+	for(var i=0;i<24;i++){
+		//Find the right sqare
+		for(var j=0;j<_this.aryConcrete.length;j++){
+			if(_this.aryConcrete[j].loc.x==0 && _this.aryConcrete[j].loc.y==(i*25))
+				_this.aryConcrete[j].setType(BLOCKED);
+		}
+	}
+	for(var i=1;i<24;i++){
+		//Find the right sqare
+		for(var j=0;j<_this.aryConcrete.length;j++){
+			if(_this.aryConcrete[j].loc.x==i*25 && _this.aryConcrete[j].loc.y==200)
+				_this.aryConcrete[j].setType(BLOCKED);
+		}
+	}
+	/*top line*/
+	for(var i=1;i<25;i++){
+		//Find the right sqare
+		for(var j=0;j<_this.aryConcrete.length;j++){
+			if(_this.aryConcrete[j].loc.x==(i*25)+175 && _this.aryConcrete[j].loc.y==0)
+				_this.aryConcrete[j].setType(BLOCKED);
+		}
+	}
+	
+	/* right hand edge*/
+	for(var i=1;i<24;i++){
+		//Find the right sqare
+		for(var j=0;j<_this.aryConcrete.length;j++){
+			if(_this.aryConcrete[j].loc.x==775 && _this.aryConcrete[j].loc.y==(i*25))
+				_this.aryConcrete[j].setType(BLOCKED);
+		}
+	}
+	
+	/*top line*/
+	for(var i=1;i<25;i++){
+		//Find the right sqare
+		for(var j=0;j<_this.aryConcrete.length;j++){
+			if(_this.aryConcrete[j].loc.x==(i*25)+175 && _this.aryConcrete[j].loc.y==400)
+				_this.aryConcrete[j].setType(BLOCKED);
+		}
+	}
+	
 }
