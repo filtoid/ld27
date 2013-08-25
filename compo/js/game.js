@@ -17,6 +17,9 @@ function Game(){
 	this.click = GameClick;
 	this.mouseMove = GameMouseMove;
 	
+	this.attackBase = GameAttackBase;
+	
+	
 	loadArray(this);
 	
 	this.base = new Base(SCREEN_WIDTH-200,SCREEN_HEIGHT-140);
@@ -25,19 +28,17 @@ function Game(){
 	this.imgButton.src = "./images/button_background.png";
 	
 	this.aryButtons = new Array();
+	this.GAME_OVER = false;
 	
 	this.aryTypes = new Array();
 	this.aryTypes[0]= TYPE_MACHINE_GUN;
 	this.aryTypes[1]= TYPE_FLAME_TOWER
 	
 	this.aryEnemies = new Array();
+	this.hintText = "";
 	
 	this.createWave = GameCreateWave;
 	this.createWave(this.wave);
-	
-	for( var i=0;i<20;i++){
-		this.aryEnemies[i] = new Enemy(ENEMY_BASIC);
-	}
 	
 	var aryCt = 0;
 	for(var i=0;i<12;i++){
@@ -56,9 +57,17 @@ function Game(){
 	this.aryMenuButtons[0] = new MenuButton("./images/icons/sell.png",800,575);
 	this.aryMenuButtons[1] = new MenuButton("./images/icons/cancel.png",825,575);
 	this.aryMenuButtons[2] = new MenuButton("./images/icons/exit.png",850,575);
+	this.aryMenuButtons[3] = new MenuButton("./images/icons/exit.png",875,575);
 	
 	this.score = 0;
 	this.money = 100;
+}
+
+function GameAttackBase(_val){
+	this.base.health-=_val;
+	if(this.base.health<0){
+		this.GAME_OVER=true;
+	}
 }
 
 function GameCreateWave(_num){
@@ -67,7 +76,7 @@ function GameCreateWave(_num){
 	// Go through and set enemies that are dead to life again
 	for( var i=0;i<20;i++){
 		if(this.aryEnemies[i]==null){
-			this.aryEnemies[i] = new Enemy(ENEMY_BASIC);
+			this.aryEnemies[i] = new Enemy(ENEMY_BASIC,_num);
 			spares-=1;
 		}
 		//	else
@@ -75,12 +84,16 @@ function GameCreateWave(_num){
 	}
 	
 	for(var i=0;i<spares;i++){
-		this.aryEnemies[this.aryEnemies.length] = new Enemy(ENEMY_BASIC);
+		this.aryEnemies[this.aryEnemies.length] = new Enemy(ENEMY_BASIC,_num);
 	}
 	
 }
 
 function GameUpdate(){
+	
+	if(this.GAME_OVER == true){
+		return;
+	}
 	
 	//this.countdown = 10;
 	//this.countdownDelay = 30;
@@ -110,6 +123,14 @@ function GameUpdate(){
 
 function GameClick(_x,_y){
 	
+	var btnReset = this.aryMenuButtons[3];
+	
+	if(_x>btnReset.loc.x && _x<btnReset.loc.x+btnReset.size.x && _y>btnReset.loc.y && _y<btnReset.loc.y+btnReset.size.y){
+		// Start a new game
+		_game=new Game();
+		return;
+	}
+	
 	var bQuitLoop = false;
 	if(_x>800){
 		/*We are clicking on menu items - either select or clear selection*/
@@ -133,6 +154,22 @@ function GameClick(_x,_y){
 
 function GameMouseMove(_x,_y){
 	
+	var btnSell = this.aryMenuButtons[0];
+	var btnCancel = this.aryMenuButtons[1];
+	var btnExit = this.aryMenuButtons[2];
+	var btnReset = this.aryMenuButtons[3];
+	
+	if(_x>btnReset.loc.x && _x<btnReset.loc.x+btnReset.size.x && _y>btnReset.loc.y && _y<btnReset.loc.y+btnReset.size.y){
+		// Start a new game
+		this.hintText = "Reset";
+	}else if(_x>btnSell.loc.x && _x<btnSell.loc.x+btnSell.size.x && _y>btnSell.loc.y && _y<btnSell.loc.y+btnSell.size.y){
+		this.hintText= "Sell";
+	}else if(_x>btnCancel.loc.x && _x<btnCancel.loc.x+btnCancel.size.x && _y>btnCancel.loc.y && _y<btnCancel.loc.y+btnCancel.size.y){
+		this.hintText= "Sell";
+	}else{
+		this.hintText ="";
+	}
+	
 	for(var i = 0;i<this.aryButtons.length;i++){
 		this.aryButtons[i].mouseMove(_x,_y);
 	}
@@ -141,6 +178,8 @@ function GameMouseMove(_x,_y){
 }
 
 function GameDraw(ctx){
+	
+	var oldStyle = ctx.fillStyle;
 	
 	ctx.drawImage(this.img,0,0);
 	
@@ -171,21 +210,28 @@ function GameDraw(ctx){
 			this.aryEnemies[i].draw(ctx);
 	}
 	
-	var oldStyle = ctx.fillStyle;
 	ctx.fillStyle = "rgb(15,254,15)";
 	if(cacheAryButton!=null)
 		ctx.fillText("$" + cacheAryButton.getCost(),840,310);
 	
 	ctx.fillText("Next Wave: " + this.countdown, 817, 475);
 	ctx.fillText("Cur Wave: " + this.wave, 819, 495);
-	ctx.fillText("$" + this.money, 810,565);
-	ctx.fillStyle = oldStyle;
+	ctx.fillText("$" + this.money, 810,535);
+	ctx.fillText(this.hintText,810,565);
 	
 	for(var i=0;i<this.aryMenuButtons.length;i++){
 		this.aryMenuButtons[i].draw(ctx);
 	}
 	
 	this.base.draw(ctx);
+	
+	if(this.GAME_OVER){
+		ctx.fillStyle = "rgb(254,0,0)";
+		ctx.fillText("GAME OVER", 425,290);
+	}
+	
+	ctx.fillStyle = oldStyle;
+	
 }
 
 function isAnyTowerSelected(_this){

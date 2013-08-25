@@ -1,12 +1,17 @@
 /*enemy.js*/
 var ENEMY_BASIC = "BASIC";
 
-function Enemy(_type){
+function Enemy(_type,_wave){
 	this.loc = new Location(112,0);
 	this.size = new Location(10,10);
 	 
 	this.draw = EnemyDraw;
 	this.update = EnemyUpdate;
+
+	if(_wave!=null)
+		this.wave = _wave;
+	else
+		this.wave=0;
 	
 	this.click = EnemyClick;
 	this.mouseMove = EnemyMouseMove;
@@ -22,11 +27,30 @@ function Enemy(_type){
 	
 	this.attack = EnemyAttack;
 	this.value = 25;
+	this.damage = 5+(5*_wave);
+	
 	this.type = _type;
+	
+	this.waveBalance = new Array();
+	this.waveBalance[0] = 0;
+	this.waveBalance[1] = 50;
+	this.waveBalance[2] = 150;
+	this.waveBalance[3] = 300;
+	this.waveBalance[4] = 600;
+	this.waveBalance[5] = 1000;
+	this.waveBalance[6] = 1500;
+	this.waveBalance[7] = 2100;
+	this.waveBalance[8] = 3000;
+	this.waveBalance[9] = 4000;
+	this.waveBalance[10] = 5000;
 	
 	this.curPathNum = 0;
 	this.delay = Math.floor(Math.random()*201);
 	this.MAX_HEALTH = 100;
+	if(this.wave>this.waveBalance.length)
+		this.wave = this.waveBalance.length;
+	
+	this.MAX_HEALTH +=this.waveBalance[this.wave];
 	this.health = this.MAX_HEALTH;
 	this.SPEED = 1;
 }
@@ -78,6 +102,12 @@ function EnemyUpdate(){
 		}
 		if(this.loc.x==this.path[this.curPathNum].x && this.loc.y==this.path[this.curPathNum].y)
 			this.curPathNum++;
+	}
+	
+	if(this.curPathNum==this.path.length){
+		if(this.health!=0)
+			_game.attackBase(this.damage);
+		this.health=0;
 	}
 }
 
