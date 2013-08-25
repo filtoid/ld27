@@ -10,6 +10,10 @@ function Game(){
 	this.imgConcrete = new Image();
 	this.imgConcrete.src = "./images/concrete.png";
 	
+	this.countdown = 10;
+	this.countdownDelay = 60; // 30 frames per second
+	this.wave = 0;
+	
 	this.click = GameClick;
 	this.mouseMove = GameMouseMove;
 	
@@ -27,6 +31,10 @@ function Game(){
 	this.aryTypes[1]= TYPE_FLAME_TOWER
 	
 	this.aryEnemies = new Array();
+	
+	this.createWave = GameCreateWave;
+	this.createWave(this.wave);
+	
 	for( var i=0;i<20;i++){
 		this.aryEnemies[i] = new Enemy(ENEMY_BASIC);
 	}
@@ -53,7 +61,42 @@ function Game(){
 	this.money = 100;
 }
 
+function GameCreateWave(_num){
+	
+	var spares = 20;
+	// Go through and set enemies that are dead to life again
+	for( var i=0;i<20;i++){
+		if(this.aryEnemies[i]==null){
+			this.aryEnemies[i] = new Enemy(ENEMY_BASIC);
+			spares-=1;
+		}
+		//	else
+	//		i--;
+	}
+	
+	for(var i=0;i<spares;i++){
+		this.aryEnemies[this.aryEnemies.length] = new Enemy(ENEMY_BASIC);
+	}
+	
+}
+
 function GameUpdate(){
+	
+	//this.countdown = 10;
+	//this.countdownDelay = 30;
+	if(this.countdownDelay>0){
+		this.countdownDelay-=1;
+	}else{
+		this.countdown-=1;
+		this.countdownDelay=60;
+		if(this.countdown<0){
+			this.countdown = 10;
+			this.wave+=1;
+			//start next wave
+			this.createWave(this.wave);
+		}
+	}
+	
 	for(var i=0;i<this.aryEnemies.length;i++){
 		if(this.aryEnemies[i]!=null)
 			this.aryEnemies[i].update();
@@ -132,6 +175,9 @@ function GameDraw(ctx){
 	ctx.fillStyle = "rgb(15,254,15)";
 	if(cacheAryButton!=null)
 		ctx.fillText("$" + cacheAryButton.getCost(),840,310);
+	
+	ctx.fillText("Next Wave: " + this.countdown, 817, 475);
+	ctx.fillText("Cur Wave: " + this.wave, 819, 495);
 	ctx.fillText("$" + this.money, 810,565);
 	ctx.fillStyle = oldStyle;
 	
