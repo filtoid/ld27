@@ -19,6 +19,7 @@ function Game(){
 	
 	this.attackBase = GameAttackBase;
 	
+	this.mode="none";
 	
 	loadArray(this);
 	
@@ -123,16 +124,25 @@ function GameUpdate(){
 
 function GameClick(_x,_y){
 	
-	var btnReset = this.aryMenuButtons[3];
-	
-	if(_x>btnReset.loc.x && _x<btnReset.loc.x+btnReset.size.x && _y>btnReset.loc.y && _y<btnReset.loc.y+btnReset.size.y){
-		// Start a new game
-		_game=new Game();
-		return;
-	}
-	
 	var bQuitLoop = false;
 	if(_x>800){
+		this.mode = "none";
+		
+		var btnSell = this.aryMenuButtons[0];
+		var btnCancel = this.aryMenuButtons[1];
+		var btnUpgrade = this.aryMenuButtons[2];
+		var btnReset = this.aryMenuButtons[3];
+	
+		if(_x>btnReset.loc.x && _x<btnReset.loc.x+btnReset.size.x && _y>btnReset.loc.y && _y<btnReset.loc.y+btnReset.size.y){
+			// Start a new game
+			_game=new Game();
+			return;
+		}else if(_x>btnSell.loc.x && _x<btnSell.loc.x+btnSell.size.x && _y>btnSell.loc.y && _y<btnSell.loc.y+btnSell.size.y){
+			this.mode = "Sell";
+		}else if(_x>btnUpgrade.loc.x && _x<btnUpgrade.loc.x+btnUpgrade.size.x && _y>btnUpgrade.loc.y && _y<btnUpgrade.loc.y+btnUpgrade.size.y){
+			this.mode = "Upgrade";
+		}	
+		
 		/*We are clicking on menu items - either select or clear selection*/
 		for(var i = 0;i<this.aryButtons.length&&bQuitLoop==false;i++){
 			if(!this.aryButtons[i].click(_x,_y))
@@ -156,7 +166,7 @@ function GameMouseMove(_x,_y){
 	
 	var btnSell = this.aryMenuButtons[0];
 	var btnCancel = this.aryMenuButtons[1];
-	var btnExit = this.aryMenuButtons[2];
+	var btnUpgrade= this.aryMenuButtons[2];
 	var btnReset = this.aryMenuButtons[3];
 	
 	if(_x>btnReset.loc.x && _x<btnReset.loc.x+btnReset.size.x && _y>btnReset.loc.y && _y<btnReset.loc.y+btnReset.size.y){
@@ -165,7 +175,9 @@ function GameMouseMove(_x,_y){
 	}else if(_x>btnSell.loc.x && _x<btnSell.loc.x+btnSell.size.x && _y>btnSell.loc.y && _y<btnSell.loc.y+btnSell.size.y){
 		this.hintText= "Sell";
 	}else if(_x>btnCancel.loc.x && _x<btnCancel.loc.x+btnCancel.size.x && _y>btnCancel.loc.y && _y<btnCancel.loc.y+btnCancel.size.y){
-		this.hintText= "Sell";
+		this.hintText= "Cancel";
+	}else if(_x>btnUpgrade.loc.x && _x<btnUpgrade.loc.x+btnUpgrade.size.x && _y>btnUpgrade.loc.y && _y<btnUpgrade.loc.y+btnUpgrade.size.y){
+		this.hintText= "Upgrade";
 	}else{
 		this.hintText ="";
 	}
@@ -217,7 +229,12 @@ function GameDraw(ctx){
 	ctx.fillText("Next Wave: " + this.countdown, 817, 475);
 	ctx.fillText("Cur Wave: " + this.wave, 819, 495);
 	ctx.fillText("$" + this.money, 810,535);
-	ctx.fillText(this.hintText,810,565);
+	
+	if(this.mode!="none"){
+		ctx.fillText(this.mode + " mode",810,565);
+	}else{
+		ctx.fillText(this.hintText,810,565);
+	}
 	
 	for(var i=0;i<this.aryMenuButtons.length;i++){
 		this.aryMenuButtons[i].draw(ctx);
