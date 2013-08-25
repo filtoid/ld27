@@ -153,17 +153,31 @@ function PlaceBlockDraw(ctx){
 	}
 	
 	if(this.level!=0){
-		ctx.fillStyle="rgb(254,0,0)";
+		ctx.fillStyle="rgb(254,254,0)";
 		ctx.fillText(this.level,this.loc.x+((this.size.x/2)-4),this.loc.y+((this.size.y/2)+3));
 	}
 	
 	if(this.bullet!=null){
+		/*his.MAX_GUN_RECHARGE = 20;
+	this.gunRecharge = 0;*/
+		var alph = this.gunRecharge/this.MAX_GUN_RECHARGE;
+		
+		ctx.globalAlpha = alph;
 		
 		ctx.strokeStyle = "rgb(128,128,128)";
+		if(this.type==TYPE_LASER_TOWER)
+			ctx.strokeStyle="rgb(254,25,25)";
+		else if( this.type==TYPE_FLAME_TOWER)
+			ctx.strokeStyle="rgb(254,254,25)";
+		else if(this.type==TYPE_MISSILE_TOWER)
+			ctx.strokeStyle="rgb(254,254,254)";
+		
 		ctx.beginPath();
 		ctx.moveTo(this.bullet[0].x,this.bullet[0].y);
 		ctx.lineTo(this.bullet[1].x,this.bullet[1].y);
 		ctx.stroke();
+		
+		ctx.globalAlpha = 1.0;
 	}
 	
 	ctx.fillStyle = oldStyle;
