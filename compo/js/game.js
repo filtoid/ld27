@@ -150,6 +150,18 @@ function GameClick(_x,_y){
 		}
 	}else{
 		/*We are clicking on the main game area*/
+		if(this.mode=="Sell"){
+			for(var i=0;i<this.aryConcrete.length;i++){
+				if(this.aryConcrete[i].hitTest(_x,_y) && this.aryConcrete[i].type!=UNUSED && this.aryConcrete[i].type!=BLOCKED){
+					this.money+=this.aryConcrete[i].sellValue;
+					this.aryConcrete[i].setType(UNUSED);
+					return;
+				}
+			}
+		}else if(this.mode=="Upgrade"){
+		
+		}
+		
 		if(isAnyTowerSelected(this)){
 			for(var j=0;j<this.aryConcrete.length;j++){
 				if(this.money >= getSelectedTower(this).getCost()){

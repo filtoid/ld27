@@ -30,6 +30,10 @@ function PlaceBlock(_x,_y){
 	this.gunRecharge = 0;
 	this.damage = 20;
 	
+	this.hitTest = PlaceBlockHitTest;
+	
+	this.sellValue=0;
+	
 	this.setType = PlaceBlockSetType;
 	
 	this.bullet = null;
@@ -127,7 +131,28 @@ function PlaceBlockDraw(ctx){
 }
 
 function PlaceBlockSetType(_type){
-	this.type=_type;
+	this.type = _type;
+	
+	if(this.type==TYPE_MACHINE_GUN){
+		this.range = 90;
+		this.damage=30;
+		this.sellValue = 10;
+	}else if(this.type==TYPE_FLAME_TOWER){
+		this.range = 75;
+		this.damage=40;
+		this.sellValue = 15;
+	}else{
+		this.range = 0;
+		this.damage=0;
+		this.sellValue=0;
+	}
+}
+
+function PlaceBlockHitTest(_x,_y){
+	if(_x>this.loc.x && _x<this.loc.x+this.size.x && _y>this.loc.y && _y<this.loc.y+this.size.y)
+		return true;
+	
+	return false;
 }
 
 function PlaceBlockClick(_x,_y,_button){
@@ -141,16 +166,7 @@ function PlaceBlockClick(_x,_y,_button){
 	if(this.type!=UNUSED)
 		return false;
 	
-	this.type = _button.type;
-	
-	if(this.type==TYPE_MACHINE_GUN){
-		this.range = 90;
-		this.damage=30;
-	}else if(this.type==TYPE_FLAME_TOWER){
-		this.range = 75;
-		this.damage=40;
-	}else
-		this.range = 0;
+	this.setType(_button.type);
 	
 	return true;
 }
