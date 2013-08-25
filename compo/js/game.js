@@ -1,4 +1,7 @@
 /* game.js */
+
+var MAX_WAVES=25;
+
 function Game(){
 	this.update = GameUpdate;
 	this.draw = GameDraw;
@@ -30,6 +33,7 @@ function Game(){
 	
 	this.aryButtons = new Array();
 	this.GAME_OVER = false;
+	this.GAME_WON= false;
 	
 	this.aryTypes = new Array();
 	this.aryTypes[0]= TYPE_MACHINE_GUN;
@@ -94,6 +98,16 @@ function GameUpdate(){
 	
 	if(this.GAME_OVER == true){
 		return;
+	}else if(this.GAME_WON==true){
+		return;
+	}else{
+		if(this.wave==MAX_WAVES){
+			this.GAME_WON=true;
+			for(var i=0;i<this.aryEnemies.length;i++){
+				if(this.aryEnemies[i]!=null)
+					this.GAME_WON=false;
+			}
+		}
 	}
 	
 	//this.countdown = 10;
@@ -105,9 +119,11 @@ function GameUpdate(){
 		this.countdownDelay=60;
 		if(this.countdown<0){
 			this.countdown = 10;
-			this.wave+=1;
-			//start next wave
-			this.createWave(this.wave);
+			if(this.wave!=MAX_WAVES){
+				this.wave+=1;
+				//start next wave
+				this.createWave(this.wave);
+			}
 		}
 	}
 	
@@ -260,6 +276,10 @@ function GameDraw(ctx){
 	
 	this.base.draw(ctx);
 	
+	if(this.GAME_WON){
+		ctx.fillStyle = "rgb(254,0,0)";
+		ctx.fillText("GAME WON - CONGRATULATIONS", 425,290);
+	}
 	if(this.GAME_OVER){
 		ctx.fillStyle = "rgb(254,0,0)";
 		ctx.fillText("GAME OVER", 425,290);

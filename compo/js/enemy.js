@@ -26,7 +26,7 @@ function Enemy(_type,_wave){
 	this.path[6] = new Location(712,506);
 	
 	this.attack = EnemyAttack;
-	this.value = 25;
+	this.value = 25 + (5*_wave);
 	this.damage = 5+(5*_wave);
 	
 	this.type = _type;
@@ -47,12 +47,14 @@ function Enemy(_type,_wave){
 	this.curPathNum = 0;
 	this.delay = Math.floor(Math.random()*201);
 	this.MAX_HEALTH = 100;
-	if(this.wave>this.waveBalance.length)
-		this.wave = this.waveBalance.length;
+	if(this.wave>this.waveBalance.length-1)
+		this.wave = this.waveBalance.length-1;
 	
 	this.MAX_HEALTH +=this.waveBalance[this.wave];
 	this.health = this.MAX_HEALTH;
-	this.SPEED = 1;
+	
+	
+	this.SPEED = 1.2-(0.1*this.wave);
 }
 
 function EnemyDraw(ctx){
