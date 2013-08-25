@@ -29,10 +29,14 @@ function PlaceBlock(_x,_y){
 	this.MAX_GUN_RECHARGE = 20;
 	this.gunRecharge = 0;
 	this.damage = 20;
+	this.upgrade = PlaceBlockUpgrade;
+	
+	this.level =0;
 	
 	this.hitTest = PlaceBlockHitTest;
 	
 	this.sellValue=0;
+	this.getUpgradeValue = PlaceBlockGetUpgradeValue;
 	
 	this.setType = PlaceBlockSetType;
 	
@@ -117,6 +121,11 @@ function PlaceBlockDraw(ctx){
 			ctx.drawImage(IMG_HI_LIGHT_RED,this.loc.x,this.loc.y);
 	}
 	
+	if(this.level!=0){
+		ctx.fillStyle="rgb(254,0,0)";
+		ctx.fillText(this.level,this.loc.x+((this.size.x/2)-4),this.loc.y+((this.size.y/2)+3));
+	}
+	
 	if(this.bullet!=null){
 		
 		ctx.strokeStyle = "rgb(128,128,128)";
@@ -134,6 +143,7 @@ function PlaceBlockSetType(_type){
 	this.type = _type;
 	
 	if(this.type==TYPE_MACHINE_GUN){
+		this.level=1;
 		this.range = 90;
 		this.damage=30;
 		this.sellValue = 10;
@@ -141,10 +151,71 @@ function PlaceBlockSetType(_type){
 		this.range = 75;
 		this.damage=40;
 		this.sellValue = 15;
+		this.level=1;
 	}else{
+		this.level=0;
 		this.range = 0;
 		this.damage=0;
 		this.sellValue=0;
+	}
+}
+
+function PlaceBlockUpgrade(_money){
+	// if we can upgrade the towers then we need to return the cost of that transaction
+	
+	// Max level is 3 for now - 0 means we haven't been allocated a type yet (or it should).
+	if(this.level==3 || this.level==0 || _money<this.getUpgradeValue())
+		return 0;
+	
+	var val =this.getUpgradeValue();
+	
+	if(this.level==1){
+		if(this.type==TYPE_MACHINE_GUN){
+			this.level=2;
+			this.range = 110;
+			this.damage=60;
+			this.sellValue = 25;
+		}else if(this.type==TYPE_FLAME_TOWER){
+			this.range = 100;
+			this.damage=80;
+			this.sellValue = 35;
+			this.level=2;
+		}
+	}else if(this.level==2){
+		if(this.type==TYPE_MACHINE_GUN){
+			this.level=3;
+			this.range = 110;
+			this.damage=60;
+			this.sellValue = 25;
+			
+		}else if(this.type==TYPE_FLAME_TOWER){
+			this.range = 100;
+			this.damage=80;
+			this.sellValue = 35;
+			this.level=2;
+		}
+	}
+	
+	return val;
+}
+
+function PlaceBlockGetUpgradeValue(){
+	
+	if(this.level==0 || this.level==3)
+		return 0;
+	
+	if(this.level==1){
+		if(this.type==TYPE_MACHINE_GUN){
+			return 100;
+		}else if(this.type==TYPE_FLAME_TOWER){
+			return 110;
+		}
+	}else if(this.level==2){
+		if(this.type==TYPE_MACHINE_GUN){
+			return 350;
+		}else if(this.type==TYPE_FLAME_TOWER){
+			return 400;
+		}
 	}
 }
 

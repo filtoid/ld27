@@ -159,7 +159,13 @@ function GameClick(_x,_y){
 				}
 			}
 		}else if(this.mode=="Upgrade"){
-		
+			for(var i=0;i<this.aryConcrete.length;i++){
+				if(this.aryConcrete[i].hitTest(_x,_y) && this.aryConcrete[i].type!=UNUSED && this.aryConcrete[i].type!=BLOCKED){
+					
+					this.money-=this.aryConcrete[i].upgrade(this.money);
+					return;
+				}
+			}
 		}
 		
 		if(isAnyTowerSelected(this)){
